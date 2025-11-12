@@ -4,7 +4,7 @@ use std::{fs, io};
 pub const WORDS_FILE_PATH: &str = "../word_list.txt";
 
 pub fn generate_target_words(
-    quantity: usize,
+    word_count: usize,
     word_file_path: &str,
 ) -> Result<Vec<String>, io::Error> {
     let contents = fs::read_to_string(word_file_path)?;
@@ -14,7 +14,7 @@ pub fn generate_target_words(
         .lines()
         .filter(|s| !s.trim().is_empty())
         .map(|s| s.to_string())
-        .choose_multiple(&mut rng, quantity)
+        .choose_multiple(&mut rng, word_count)
         .into_iter()
         .collect();
 
@@ -59,21 +59,21 @@ mod tests {
         let content = "apple\nbanana\ncherry\ndate\neggplant\nfig\ngrape";
 
         let _fixture = setup_test(content).expect("Failed to create test file");
-        let quantity = 3;
+        let word_count = 3;
 
-        let result = generate_target_words(quantity, TEST_FILE_PATH);
+        let result = generate_target_words(word_count, TEST_FILE_PATH);
 
         assert!(result.is_ok());
         let words = result.unwrap();
-        assert_eq!(words.len(), quantity);
+        assert_eq!(words.len(), word_count);
     }
 
     #[test]
     fn test_file_not_found() {
         let non_existent_path = "non_existent_file_12345.txt";
-        let quantity = 5;
+        let word_count = 5;
 
-        let result = generate_target_words(quantity, non_existent_path);
+        let result = generate_target_words(word_count, non_existent_path);
 
         assert!(result.is_err());
         let error_kind = result.unwrap_err().kind();

@@ -8,11 +8,6 @@ pub struct Game {
     pub state: usize,
 }
 
-pub fn update_game_state(state: &mut Game, new_state: usize) -> &mut Game {
-    state.state = new_state;
-    return state;
-}
-
 pub fn start_game(words_count: usize) -> Result<Game, io::Error> {
     let target_words = generate_target_words(words_count, WORDS_FILE_PATH)?;
 
@@ -21,4 +16,11 @@ pub fn start_game(words_count: usize) -> Result<Game, io::Error> {
         current_word: 0,
         state: 0,
     })
+}
+
+impl Game {
+    pub fn update_game_state(&mut self, new_state: usize) -> &mut Game {
+        self.state = new_state;
+        return self;
+    }
 }
