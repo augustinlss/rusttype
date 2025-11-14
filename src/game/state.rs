@@ -14,7 +14,7 @@ pub enum GameState {
     Finished,
 }
 
-pub fn start_game(words_count: usize) -> Result<Game, io::Error> {
+pub fn create_game(words_count: usize) -> Result<Game, io::Error> {
     let target_words = generate_target_words(words_count);
 
     Ok(Game {
