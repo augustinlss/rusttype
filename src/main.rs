@@ -23,18 +23,15 @@ fn main() -> Result<()> {
 
     // prepare terminal
     let mut stdout = stdout();
-    // execute!(stdout, EnterAlternateScreen)?;
     enable_raw_mode()?;
 
     let words_count = args.word_count;
 
     let mut game: Game = create_game(words_count)?;
 
-    // TODO: add main game loop
     game.start()?;
 
     disable_raw_mode()?;
-    // execute!(stdout, LeaveAlternateScreen)?;
 
     Ok(())
 }

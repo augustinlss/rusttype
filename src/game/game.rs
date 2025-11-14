@@ -11,7 +11,9 @@ use super::words::generate_target_words;
 
 pub struct Game {
     pub target_words: Vec<String>,
-    pub current_word: usize,
+    pub typed_words: Vec<String>,
+    pub current_word_typed: String,
+    pub current_word_idx: usize,
     pub state: GameState,
 }
 
@@ -26,7 +28,9 @@ pub fn create_game(words_count: usize) -> Result<Game, io::Error> {
 
     Ok(Game {
         target_words,
-        current_word: 0,
+        typed_words: vec![],
+        current_word_typed: String::new(),
+        current_word_idx: 0,
         state: GameState::WaitingToStart,
     })
 }
@@ -44,7 +48,7 @@ impl Game {
             .execute(SetForegroundColor(Color::DarkGrey))?
             .execute(Print(self.target_words.join(" ")))?;
 
-        stdout.flush();
+        stdout.flush()?;
 
         loop {
             if event::poll(std::time::Duration::from_millis(10))? {
