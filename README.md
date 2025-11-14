@@ -13,10 +13,10 @@ $$/        $$$$$$/  $$$$$$$/    $$/       $$/   $$$$$$$ |$$$$$$$/   $$$$$$$/
                                                 $$$$$$/  $$/                 
 ```
 # 🦀 rusTType  
-*A fast, terminal-based typing test written in Rust (alluding to the `tt` command).*
+*A fast, terminal-based typing test written in Rust.*
 
 rusTType is a lightweight, MonkeyType-inspired typing program built entirely for the terminal.  
-It focuses on speed, clarity, and minimalism — no browser, no ads, just pure typing flow.
+It focuses on speed, clarity, and minimalism.
 
 The project aims to be a fully keyboard-driven CLI app with a clean TUI display, colored feedback, and accurate WPM/accuracy calculations.
 
@@ -51,7 +51,7 @@ tt -w 15
 The goal is to replicate the core experience of MonkeyType, but inside a clean Rust-powered TUI:
 
 - Words appear in dimmed text  
-- Typing starts on first keypress  
+- Test starts on first keypress  
 - Characters turn green/red immediately  
 - Test ends when the target words are completed  
 - WPM and accuracy are displayed at the end  
@@ -100,5 +100,15 @@ Development:
 ```
 cargo run -- -w 15
 ```
+
+
+
+---
+
+## 🤝 Contributions
+
+PRs, suggestions, and issues are welcome.  
+This is a learning-oriented project — feedback of any level is appreciated!
+
 
 
