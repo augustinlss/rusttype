@@ -1,4 +1,11 @@
-use std::io;
+use std::io::{self, stdout, Write};
+
+use anyhow::Result;
+use crossterm::{
+    event::{self, Event, KeyCode},
+    style::{Color, Print, SetForegroundColor},
+    ExecutableCommand,
+};
 
 use super::words::generate_target_words;
 
@@ -30,7 +37,30 @@ impl Game {
         return self;
     }
 
-    pub fn run(&mut self) {
-        loop {}
+    pub fn start(&mut self) -> Result<()> {
+        let mut stdout = stdout();
+
+        stdout
+            .execute(SetForegroundColor(Color::DarkGrey))?
+            .execute(Print(self.target_words.join(" ")))?;
+
+        stdout.flush();
+
+        loop {
+            if event::poll(std::time::Duration::from_millis(10))? {
+                if let Event::Key(key) = event::read()? {
+                    if let KeyCode::Char(c) = key.code {
+                        self.state = GameState::Running;
+                        return self.run;
+                    }
+                }
+            }
+        }
+    }
+
+    pub fn run(&mut self, first_char: char) -> Result<()> {
+        let mut stdout = stdout();
+
+        Ok(())
     }
 }
