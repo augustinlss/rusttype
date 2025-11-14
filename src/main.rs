@@ -6,7 +6,7 @@ use crossterm::{
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use game::state::{create_game, Game};
+use game::game::{create_game, Game};
 
 mod game;
 
@@ -23,7 +23,7 @@ fn main() -> Result<()> {
 
     // prepare terminal
     let mut stdout = stdout();
-    execute!(stdout, EnterAlternateScreen)?;
+    // execute!(stdout, EnterAlternateScreen)?;
     enable_raw_mode()?;
 
     let words_count = args.word_count;
@@ -31,10 +31,10 @@ fn main() -> Result<()> {
     let mut game: Game = create_game(words_count)?;
 
     // TODO: add main game loop
-    game.start();
+    game.start()?;
 
     disable_raw_mode()?;
-    execute!(stdout, LeaveAlternateScreen)?;
+    // execute!(stdout, LeaveAlternateScreen)?;
 
     Ok(())
 }
