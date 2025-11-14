@@ -51,7 +51,7 @@ impl Game {
                 if let Event::Key(key) = event::read()? {
                     if let KeyCode::Char(c) = key.code {
                         self.state = GameState::Running;
-                        return self.run;
+                        return self.run(c);
                     }
                 }
             }
