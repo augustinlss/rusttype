@@ -1,7 +1,11 @@
-use std::io::{self, stdout, Write};
+use std::{
+    intrinsics::floorf16,
+    io::{self, stdout, Write},
+};
 
 use anyhow::Result;
 use crossterm::{
+    cursor,
     event::{self, Event, KeyCode},
     style::{Color, Print, SetForegroundColor},
     ExecutableCommand,
@@ -65,6 +69,28 @@ impl Game {
     pub fn run(&mut self, first_char: char) -> Result<()> {
         let mut stdout = stdout();
 
+        Ok(())
+    }
+
+    pub fn draw_progress(&self) -> Result<()> {
+        let mut stdout = stdout();
+        stdout.execute(cursor::MoveTo(0, 0))?;
+
+        for (i, target_char) in self.target_words.join(" ").chars().enumerate() {
+            let color = if self.typed_words.join(" ").chars().nth(i) == Some(target_char) {
+                Color::Green
+            } else if i < self.typed_words.join(" ").len() {
+                Color::Red
+            } else {
+                Color::DarkGrey
+            };
+
+            stdout
+                .execute(SetForegroundColor(color))?
+                .execute(Print(target_char))?;
+        }
+
+        stdout.flush();
         Ok(())
     }
 }
