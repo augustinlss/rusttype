@@ -67,7 +67,33 @@ impl Game {
     }
 
     pub fn run(&mut self, first_char: char) -> Result<()> {
-        let mut stdout = stdout();
+        self.typed_words.push(first_char.to_string());
+        self.draw_progress()?;
+
+        loop {
+            if event::poll(std::time::Duration::from_millis(10))? {
+                if let Event::Key(key) = event::read()? {
+                    match key.code {
+                        KeyCode::Char(c) => {
+                            self.typed_words.push(c.to_string());
+                            self.draw_progress()?
+                        }
+                        KeyCode::Backspace => {
+                            self.typed_words.pop();
+                            self.draw_progress()?;
+                        }
+                        KeyCode::Esc => {
+                            break;
+                        }
+                        _ => {}
+                    }
+                }
+            }
+
+            if self.typed_words.len() >= self.target_words.len() {
+                break;
+            }
+        }
 
         Ok(())
     }
