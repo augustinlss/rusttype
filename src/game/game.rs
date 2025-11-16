@@ -97,7 +97,7 @@ impl Game {
 
     pub fn draw_progress(&self) -> Result<()> {
         let mut stdout = stdout();
-        stdout.execute(cursor::MoveTo(0, 0))?;
+        // stdout.execute(cursor::MoveTo(0, 0))?;
 
         for (i, target_char) in self.target_words.join(" ").chars().enumerate() {
             let color = if self.typed_buffer.chars().nth(i) == Some(target_char) {

@@ -12,6 +12,8 @@ $$/        $$$$$$/  $$$$$$$/    $$/       $$/   $$$$$$$ |$$$$$$$/   $$$$$$$/
                                                $$    $$/ $$ |                
                                                 $$$$$$/  $$/                 
 ```
+
+this read me was written by AI btw, i aint got the patience to write all dis.
 # 🦀 rusTType  
 *A fast, terminal-based typing test written in Rust.*
 
