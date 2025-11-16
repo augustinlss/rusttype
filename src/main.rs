@@ -1,11 +1,6 @@
-use std::io::stdout;
-
 use anyhow::Result;
 use clap::Parser;
-use crossterm::{
-    execute,
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
-};
+use crossterm::terminal::{disable_raw_mode, enable_raw_mode};
 use game::game::{create_game, Game};
 
 mod game;
@@ -21,8 +16,6 @@ struct Args {
 fn main() -> Result<()> {
     let args = Args::parse();
 
-    // prepare terminal
-    let mut stdout = stdout();
     enable_raw_mode()?;
 
     let words_count = args.word_count;

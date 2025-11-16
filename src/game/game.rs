@@ -1,7 +1,4 @@
-use std::{
-    intrinsics::floorf16,
-    io::{self, stdout, Write},
-};
+use std::io::{self, stdout, Write};
 
 use anyhow::Result;
 use crossterm::{
@@ -83,6 +80,7 @@ impl Game {
                             self.draw_progress()?;
                         }
                         KeyCode::Esc => {
+                            self.state = GameState::Finished;
                             break;
                         }
                         _ => {}
@@ -91,6 +89,7 @@ impl Game {
             }
 
             if self.typed_words.len() >= self.target_words.len() {
+                self.state = GameState::Finished;
                 break;
             }
         }
@@ -116,7 +115,7 @@ impl Game {
                 .execute(Print(target_char))?;
         }
 
-        stdout.flush();
+        stdout.flush()?;
         Ok(())
     }
 }
