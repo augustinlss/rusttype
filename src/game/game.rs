@@ -12,9 +12,8 @@ use super::words::generate_target_words;
 
 pub struct Game {
     pub target_words: Vec<String>,
-    pub typed_words: Vec<String>,
-    pub current_word_typed: String,
-    pub current_word_idx: usize,
+    pub typed_buffer: String,
+    pub target_buffer: String,
     pub state: GameState,
 }
 
@@ -29,9 +28,8 @@ pub fn create_game(words_count: usize) -> Result<Game, io::Error> {
 
     Ok(Game {
         target_words,
-        typed_words: vec![],
-        current_word_typed: String::new(),
-        current_word_idx: 0,
+        typed_buffer: String::new(),
+        target_buffer: String::new(),
         state: GameState::WaitingToStart,
     })
 }
@@ -64,7 +62,7 @@ impl Game {
     }
 
     pub fn run(&mut self, first_char: char) -> Result<()> {
-        self.typed_words.push(first_char.to_string());
+        self.typed_buffer.push(first_char);
         self.draw_progress()?;
 
         loop {
@@ -72,11 +70,11 @@ impl Game {
                 if let Event::Key(key) = event::read()? {
                     match key.code {
                         KeyCode::Char(c) => {
-                            self.typed_words.push(c.to_string());
+                            self.typed_buffer.push(c);
                             self.draw_progress()?
                         }
                         KeyCode::Backspace => {
-                            self.typed_words.pop();
+                            self.typed_buffer.pop();
                             self.draw_progress()?;
                         }
                         KeyCode::Esc => {
@@ -88,7 +86,7 @@ impl Game {
                 }
             }
 
-            if self.typed_words.len() >= self.target_words.len() {
+            if self.typed_buffer.len() >= self.target_words.join(" ").len() {
                 self.state = GameState::Finished;
                 break;
             }
@@ -102,9 +100,9 @@ impl Game {
         stdout.execute(cursor::MoveTo(0, 0))?;
 
         for (i, target_char) in self.target_words.join(" ").chars().enumerate() {
-            let color = if self.typed_words.join(" ").chars().nth(i) == Some(target_char) {
+            let color = if self.typed_buffer.chars().nth(i) == Some(target_char) {
                 Color::Green
-            } else if i < self.typed_words.join(" ").len() {
+            } else if i < self.typed_buffer.len() {
                 Color::Red
             } else {
                 Color::DarkGrey
