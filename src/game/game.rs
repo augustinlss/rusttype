@@ -53,7 +53,7 @@ impl Game {
             if event::poll(std::time::Duration::from_millis(10))? {
                 if let Event::Key(key) = event::read()? {
                     if let KeyCode::Char(c) = key.code {
-                        self.state = GameState::Running;
+                        self.update_game_state(GameState::Running);
                         return self.run(c);
                     }
                 }
@@ -78,7 +78,7 @@ impl Game {
                             self.draw_progress()?;
                         }
                         KeyCode::Esc => {
-                            self.state = GameState::Finished;
+                            self.update_game_state(GameState::Finished);
                             break;
                         }
                         _ => {}
@@ -87,7 +87,7 @@ impl Game {
             }
 
             if self.typed_buffer.len() >= self.target_words.join(" ").len() {
-                self.state = GameState::Finished;
+                self.update_game_state(GameState::Finished);
                 break;
             }
         }
