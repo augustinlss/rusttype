@@ -11,3 +11,8 @@ pub fn init() -> io::Result<()> {
     stdout.execute(SetCursorStyle::SteadyBar)?;
     Ok(())
 }
+
+pub fn move_to(x: u16, y: u16) -> io::Result<()> {
+    stdout().execute(cursor::MoveTo(x, y))?;
+    Ok(())
+}
