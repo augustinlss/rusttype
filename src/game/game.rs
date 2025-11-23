@@ -147,6 +147,14 @@ impl Game {
                 .execute(Print(target_char))?;
         }
 
+        // Position cursor at the typing position
+        let typed_len = self.typed_buffer.len();
+        let cursor_offset = start_x + typed_len;
+        let cursor_y = self.start_pos.1 + (cursor_offset / cols as usize) as u16;
+        let cursor_x = (cursor_offset % cols as usize) as u16;
+        
+        game_cursor::move_to(cursor_x, cursor_y)?;
+
         stdout.flush()?;
         Ok(())
     }
