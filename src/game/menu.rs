@@ -43,13 +43,13 @@ impl Menu {
             if event::poll(std::time::Duration::from_millis(100))? {
                 if let Event::Key(key) = event::read()? {
                     match key.code {
-                        KeyCode::Up => {
+                        KeyCode::Char('k') | KeyCode::Up => {
                             if self.selected_index > 0 {
                                 self.selected_index -= 1;
                                 self.draw()?;
                             }
                         }
-                        KeyCode::Down => {
+                        KeyCode::Char('j') | KeyCode::Down => {
                             if self.selected_index < self.options.len() - 1 {
                                 self.selected_index += 1;
                                 self.draw()?;
