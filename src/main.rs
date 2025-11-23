@@ -11,23 +11,32 @@ struct Args {
     /// Number of words for test
     #[arg(short = 'w', long = "words", default_value_t = 10)]
     word_count: usize,
+
+    /// Show the menu
+    #[arg(short = 'm', long = "menu", default_value_t = false)]
+    menu: bool,
 }
 
 use game::menu::{Menu, MenuAction};
 
 fn main() -> Result<()> {
-    // let args = Args::parse(); // Args not used for now, relying on menu
+    let args = Args::parse();
     enable_raw_mode()?;
 
-    loop {
-        let mut menu = Menu::new();
-        match menu.run()? {
-            MenuAction::StartGame(word_count) => {
-                let mut game: Game = create_game(word_count)?;
-                game.start()?;
+    if args.menu {
+        loop {
+            let mut menu = Menu::new();
+            match menu.run()? {
+                MenuAction::StartGame(word_count) => {
+                    let mut game: Game = create_game(word_count)?;
+                    game.start()?;
+                }
+                MenuAction::Quit => break,
             }
-            MenuAction::Quit => break,
         }
+    } else {
+        let mut game: Game = create_game(args.word_count)?;
+        game.start()?;
     }
 
     disable_raw_mode()?;
