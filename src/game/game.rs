@@ -14,7 +14,6 @@ use super::words::generate_target_words;
 pub struct Game {
     pub target_words: Vec<String>,
     pub typed_buffer: String,
-    pub target_buffer: String,
     pub state: GameState,
     pub start_pos: (u16, u16),
 }
@@ -23,6 +22,7 @@ pub enum GameState {
     WaitingToStart,
     Running,
     Finished,
+    Quit,
 }
 
 pub fn create_game(words_count: usize) -> Result<Game, io::Error> {
@@ -31,7 +31,6 @@ pub fn create_game(words_count: usize) -> Result<Game, io::Error> {
     Ok(Game {
         target_words,
         typed_buffer: String::new(),
-        target_buffer: String::new(),
         state: GameState::WaitingToStart,
         start_pos: (0, 0),
     })
@@ -50,21 +49,25 @@ impl Game {
 
         game_cursor::init()?;
 
+        // Initial cursor position
+        game_cursor::move_to(self.start_pos.0, self.start_pos.1)?;
+
         stdout
             .execute(SetForegroundColor(Color::DarkGrey))?
             .execute(Print(self.target_words.join(" ")))?;
 
         stdout.flush()?;
 
-        // Initial cursor position
-        game_cursor::move_to(self.start_pos.0, self.start_pos.1)?;
-
         loop {
             if event::poll(std::time::Duration::from_millis(10))? {
                 if let Event::Key(key) = event::read()? {
-                    if let KeyCode::Char(c) = key.code {
-                        self.update_game_state(GameState::Running);
-                        return self.run(c);
+                    match key.code {
+                        KeyCode::Char(c) => return self.run(c),
+                        KeyCode::Esc => {
+                            self.update_game_state(GameState::Quit);
+                            return Ok(());
+                        }
+                        _ => {}
                     }
                 }
             }
@@ -74,6 +77,8 @@ impl Game {
     pub fn run(&mut self, first_char: char) -> Result<()> {
         self.typed_buffer.push(first_char);
         self.draw_progress()?;
+
+        self.update_game_state(GameState::Running);
 
         loop {
             if event::poll(std::time::Duration::from_millis(10))? {
@@ -88,7 +93,7 @@ impl Game {
                             self.draw_progress()?;
                         }
                         KeyCode::Esc => {
-                            self.update_game_state(GameState::Finished);
+                            self.update_game_state(GameState::Quit);
                             break;
                         }
                         _ => {}

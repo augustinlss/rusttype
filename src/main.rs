@@ -19,6 +19,8 @@ struct Args {
 
 use game::menu::{Menu, MenuAction};
 
+use crate::game::game::GameState;
+
 fn main() -> Result<()> {
     let args = Args::parse();
     enable_raw_mode()?;
@@ -35,8 +37,14 @@ fn main() -> Result<()> {
             }
         }
     } else {
-        let mut game: Game = create_game(args.word_count)?;
-        game.start()?;
+        loop {
+            let mut game: Game = create_game(args.word_count)?;
+            game.start()?;
+            match game.state {
+                GameState::Quit => break,
+                _ => {}
+            }
+        }
     }
 
     disable_raw_mode()?;
