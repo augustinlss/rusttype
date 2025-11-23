@@ -5,7 +5,7 @@ use crossterm::{
     cursor,
     event::{self, Event, KeyCode},
     style::{Color, Print, SetForegroundColor},
-    ExecutableCommand,
+    terminal, ExecutableCommand,
 };
 
 use super::cursor as game_cursor;
@@ -114,24 +114,38 @@ impl Game {
 
     pub fn draw_progress(&self) -> Result<()> {
         let mut stdout = stdout();
+        let (cols, _) = terminal::size()?;
+
+        // Calculate how many lines the text occupies
+        let target_text = self.target_words.join(" ");
+        let text_len = target_text.len();
+        let start_x = self.start_pos.0 as usize;
+        let total_chars = start_x + text_len;
+        let lines_needed = (total_chars / cols as usize) + 1;
+
+        // Clear each line
+        for line_offset in 0..lines_needed {
+            stdout.execute(cursor::MoveTo(0, self.start_pos.1 + line_offset as u16))?;
+            stdout.execute(terminal::Clear(terminal::ClearType::CurrentLine))?;
+        }
+
+        // Move back to start and draw
         stdout.execute(cursor::MoveTo(self.start_pos.0, self.start_pos.1))?;
 
-        for (i, target_char) in self.target_words.join(" ").chars().enumerate() {
-            let color = if self.typed_buffer.chars().nth(i) == Some(target_char) {
-                Color::Green
-            } else if i < self.typed_buffer.len() {
-                Color::Red
+        for (i, target_char) in target_text.chars().enumerate() {
+            let color = if i < self.typed_buffer.len() {
+                if self.typed_buffer.chars().nth(i) == Some(target_char) {
+                    Color::Green
+                } else {
+                    Color::Red
+                }
             } else {
                 Color::DarkGrey
             };
-
             stdout
                 .execute(SetForegroundColor(color))?
                 .execute(Print(target_char))?;
         }
-
-        let cursor_x = self.start_pos.0 + self.typed_buffer.len() as u16;
-        game_cursor::move_to(cursor_x, self.start_pos.1)?;
 
         stdout.flush()?;
         Ok(())
