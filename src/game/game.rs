@@ -8,6 +8,7 @@ use crossterm::{
     ExecutableCommand,
 };
 
+use super::cursor as game_cursor;
 use super::words::generate_target_words;
 
 pub struct Game {
@@ -15,6 +16,7 @@ pub struct Game {
     pub typed_buffer: String,
     pub target_buffer: String,
     pub state: GameState,
+    pub start_pos: (u16, u16),
 }
 
 pub enum GameState {
@@ -31,6 +33,7 @@ pub fn create_game(words_count: usize) -> Result<Game, io::Error> {
         typed_buffer: String::new(),
         target_buffer: String::new(),
         state: GameState::WaitingToStart,
+        start_pos: (0, 0),
     })
 }
 
@@ -43,11 +46,18 @@ impl Game {
     pub fn start(&mut self) -> Result<()> {
         let mut stdout = stdout();
 
+        self.start_pos = cursor::position()?;
+
+        game_cursor::init()?;
+
         stdout
             .execute(SetForegroundColor(Color::DarkGrey))?
             .execute(Print(self.target_words.join(" ")))?;
 
         stdout.flush()?;
+
+        // Initial cursor position
+        game_cursor::move_to(self.start_pos.0, self.start_pos.1)?;
 
         loop {
             if event::poll(std::time::Duration::from_millis(10))? {
@@ -97,7 +107,7 @@ impl Game {
 
     pub fn draw_progress(&self) -> Result<()> {
         let mut stdout = stdout();
-        stdout.execute(cursor::MoveTo(0, 0))?;
+        stdout.execute(cursor::MoveTo(self.start_pos.0, self.start_pos.1))?;
 
         for (i, target_char) in self.target_words.join(" ").chars().enumerate() {
             let color = if self.typed_buffer.chars().nth(i) == Some(target_char) {
@@ -112,6 +122,9 @@ impl Game {
                 .execute(SetForegroundColor(color))?
                 .execute(Print(target_char))?;
         }
+
+        let cursor_x = self.start_pos.0 + self.typed_buffer.len() as u16;
+        game_cursor::move_to(cursor_x, self.start_pos.1)?;
 
         stdout.flush()?;
         Ok(())

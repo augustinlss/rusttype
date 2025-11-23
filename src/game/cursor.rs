@@ -8,6 +8,7 @@ use crossterm::{
 pub fn init() -> io::Result<()> {
     let mut stdout = stdout();
     stdout.execute(cursor::Show)?;
+    stdout.execute(cursor::MoveTo(0, 0))?;
     stdout.execute(SetCursorStyle::SteadyBar)?;
     Ok(())
 }

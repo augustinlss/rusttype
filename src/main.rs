@@ -13,16 +13,22 @@ struct Args {
     word_count: usize,
 }
 
-fn main() -> Result<()> {
-    let args = Args::parse();
+use game::menu::{Menu, MenuAction};
 
+fn main() -> Result<()> {
+    // let args = Args::parse(); // Args not used for now, relying on menu
     enable_raw_mode()?;
 
-    let words_count = args.word_count;
-
-    let mut game: Game = create_game(words_count)?;
-
-    game.start()?;
+    loop {
+        let mut menu = Menu::new();
+        match menu.run()? {
+            MenuAction::StartGame(word_count) => {
+                let mut game: Game = create_game(word_count)?;
+                game.start()?;
+            }
+            MenuAction::Quit => break,
+        }
+    }
 
     disable_raw_mode()?;
 
