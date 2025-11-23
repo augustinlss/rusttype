@@ -45,6 +45,8 @@ impl Game {
     pub fn start(&mut self) -> Result<()> {
         let mut stdout = stdout();
 
+        stdout.execute(Print("\r\n"))?;
+
         self.start_pos = cursor::position()?;
 
         game_cursor::init()?;

@@ -9,20 +9,23 @@ mod game;
 #[command(version, about, long_about = None)]
 struct Args {
     /// Number of words for test
-    #[arg(short = 'w', long = "words", default_value_t = 10)]
-    word_count: usize,
+    #[arg(short = 'w', long = "words")]
+    word_count: Option<usize>,
 
     /// Show the menu
     #[arg(short = 'm', long = "menu", default_value_t = false)]
     menu: bool,
 }
 
+use game::config::Config;
 use game::menu::{Menu, MenuAction};
 
 use crate::game::game::GameState;
 
 fn main() -> Result<()> {
     let args = Args::parse();
+    let config = Config::load();
+
     enable_raw_mode()?;
 
     if args.menu {
@@ -37,8 +40,9 @@ fn main() -> Result<()> {
             }
         }
     } else {
+        let word_count = args.word_count.unwrap_or(config.word_count);
         loop {
-            let mut game: Game = create_game(args.word_count)?;
+            let mut game: Game = create_game(word_count)?;
             game.start()?;
             match game.state {
                 GameState::Quit => break,

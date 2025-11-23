@@ -9,6 +9,8 @@ use crossterm::{
     ExecutableCommand,
 };
 
+use crate::game::config::Config;
+
 pub enum MenuAction {
     StartGame(usize), // word_count
     Quit,
@@ -62,6 +64,8 @@ impl Menu {
                             } else if val == 0 {
                                 // Placeholder, do nothing
                             } else {
+                                let config = Config { word_count: val };
+                                config.save();
                                 return Ok(MenuAction::StartGame(val));
                             }
                         }
